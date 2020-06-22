@@ -1,12 +1,11 @@
-import sys, pygame
+import sys
+import pygame
+import random
 #Icons: https://www.flaticon.com/authors/freepik
+#https: // www.flaticon.com/authors/smashicons
 
 pygame.init()
-
 ICON_SIZE = 64
-
-speed = [2, 2]
-black = 0, 0, 0
 
 #Window/Screen
 WINDOW_WIDTH = 800
@@ -22,8 +21,14 @@ player_icon = pygame.image.load("icons/ninja.png")
 playerX, playerY = 370, 480
 playerX_delta = 0
 
-def player(x, y):
-    screen.blit(player_icon, (x, y)) #draws player image
+#Enemy
+enemy_icon = pygame.image.load("icons/samurai.png")
+enemyX, enemyY = random.randint(0,800), random.randint(50, 150)
+enemyX_delta = 3
+enemyY_delta = 0
+
+def character(icon, x, y):
+    screen.blit(icon, (x, y)) #draws player image
 
 while 1:
     screen.fill((0, 0, 0))
@@ -46,5 +51,13 @@ while 1:
     elif playerX >= WINDOW_WIDTH-ICON_SIZE:
         playerX = WINDOW_WIDTH-ICON_SIZE
 
-    player(playerX, playerY)
+    enemyX += enemyX_delta
+
+    if enemyX <= 0:
+        enemyX_delta = 3
+    elif enemyX >= WINDOW_WIDTH-ICON_SIZE:
+        enemyX_delta = -3
+
+    character(player_icon, playerX, playerY)
+    character(enemy_icon, enemyX, enemyY)
     pygame.display.update()
