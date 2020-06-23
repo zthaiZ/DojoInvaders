@@ -1,6 +1,7 @@
 import sys
 import pygame
 import random
+import math
 #images: https://www.flaticon.com/authors/freepik
 #https: // www.flaticon.com/authors/smashimages
 #BG Image: https://www.vecteezy.com/vector-art/156648-illustration-of-dojo-room
@@ -27,9 +28,10 @@ playerX_delta = 0
 
 #Enemy
 enemy_icon = pygame.image.load("images/samurai.png")
-enemyX, enemyY = random.randint(0,800), random.randint(50, 150)
+enemyX, enemyY = random.randint(0,735), random.randint(50, 150)
 enemyX_delta = 3
 enemyY_delta = 40
+HITBOX = 27
 
 #Weapon
 weapon_icon = pygame.image.load("images/shuriken.png")
@@ -45,6 +47,14 @@ def throw_weapon(x, y):
 
 def character(icon, x, y):
     screen.blit(icon, (x, y)) #draws player image
+
+def isCollision(enemyX, enemyY, weaponX, weaponY):
+    distance = math.sqrt(math.pow(enemyX-weaponX, 2) + math.pow(enemyY-weaponY, 2))
+    if distance < HITBOX:
+        return True
+    return False
+
+score = 0
 
 while 1:
     screen.fill((0, 0, 0))
@@ -83,7 +93,7 @@ while 1:
         enemyX_delta = -3
         enemyY += enemyY_delta
 
-
+    # Weapon movement
     if weaponY <= 0:
         weaponY = 480
         weapon_state = "ready"
@@ -91,6 +101,14 @@ while 1:
     if weapon_state is "throw":
         throw_weapon(weaponX, weaponY)
         weaponY -= weaponY_delta
+
+    # Collision
+    hit = isCollision(enemyX, enemyY, weaponX, weaponY)
+    if hit:
+        weaponY = 480
+        weapon_state = "ready"
+        score += 1
+        enemyX, enemyY = random.randint(0, 800), random.randint(50, 150)
 
     character(player_icon, playerX, playerY)
     character(enemy_icon, enemyX, enemyY)
