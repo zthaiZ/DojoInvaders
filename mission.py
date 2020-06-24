@@ -26,13 +26,37 @@ player_icon = pygame.image.load("images/ninja.png")
 playerX, playerY = 370, 480
 playerX_delta = 0
 
-#Enemy
-enemy_icon = pygame.image.load("images/samurai.png")
-enemyX, enemyY = random.randint(0,735), random.randint(50, 150)
-enemyX_delta = 3
-enemyY_delta = 40
+#Enemies
 HITBOX = 27
+enemies = []
+enemyX = []
+enemyY = []
+enemyX_delta = []
+enemyY_delta = []
+enemy_count = 6
+enemy_icon = pygame.image.load("images/samurai.png")
 
+#Lives
+lives_count = 5
+lives = []
+livesX = []
+livesY = 560
+x_pos = 700
+hp_icon = pygame.image.load("images/love.png")
+
+
+for i in range(lives_count):
+    lives.append(hp_icon)
+    livesX.append(x_pos)
+    x_pos += 20
+
+for i in range(enemy_count):
+    enemies.append(enemy_icon)
+    enemyX.append(random.randint(0, 735))
+    enemyY.append(random.randint(50, 150))
+    enemyX_delta.append(4)
+    enemyY_delta.append(40)
+    
 #Weapon
 weapon_icon = pygame.image.load("images/shuriken.png")
 weaponX, weaponY = 0, 480
@@ -45,7 +69,7 @@ def throw_weapon(x, y):
     weapon_state = "throw"
     screen.blit(weapon_icon, (x+16, y+10))
 
-def character(icon, x, y):
+def display_element(icon, x, y):
     screen.blit(icon, (x, y)) #draws player image
 
 def isCollision(enemyX, enemyY, weaponX, weaponY):
@@ -83,16 +107,6 @@ while 1:
     elif playerX >= WINDOW_WIDTH-ICON_SIZE:
         playerX = WINDOW_WIDTH-ICON_SIZE
 
-    enemyX += enemyX_delta
-
-    if enemyX <= 0:
-        enemyX_delta = 3
-        enemyY += enemyY_delta
-
-    elif enemyX >= WINDOW_WIDTH-ICON_SIZE:
-        enemyX_delta = -3
-        enemyY += enemyY_delta
-
     # Weapon movement
     if weaponY <= 0:
         weaponY = 480
@@ -102,14 +116,30 @@ while 1:
         throw_weapon(weaponX, weaponY)
         weaponY -= weaponY_delta
 
-    # Collision
-    hit = isCollision(enemyX, enemyY, weaponX, weaponY)
-    if hit:
-        weaponY = 480
-        weapon_state = "ready"
-        score += 1
-        enemyX, enemyY = random.randint(0, 800), random.randint(50, 150)
+    for i in range(enemy_count):
+        enemyX[i] += enemyX_delta[i]
 
-    character(player_icon, playerX, playerY)
-    character(enemy_icon, enemyX, enemyY)
+        if enemyX[i] <= 0:
+            enemyX_delta[i] = 3
+            enemyY[i] += enemyY_delta[i]
+
+        elif enemyX[i] >= WINDOW_WIDTH-ICON_SIZE:
+            enemyX_delta[i] = -3
+            enemyY[i] += enemyY_delta[i]
+
+        # Collision
+        hit = isCollision(enemyX[i], enemyY[i], weaponX, weaponY)
+        if hit:
+            weaponY = 480
+            weapon_state = "ready"
+            score += 1
+            enemyX[i], enemyY[i] = random.randint(0, 800), random.randint(50, 150)
+
+        display_element(enemies[i], enemyX[i], enemyY[i])
+
+    display_element(player_icon, playerX, playerY)
+
+    for i in range(lives_count):
+        display_element(lives[i], livesX[i], livesY)
+
     pygame.display.update()
