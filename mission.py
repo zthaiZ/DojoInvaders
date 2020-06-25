@@ -141,7 +141,7 @@ while 1:
             weaponY = 480
             weapon_state = "ready"
             score_val += 1
-            enemyX[i], enemyY[i] = random.randint(0, 800), random.randint(50, 150)
+            enemyX[i], enemyY[i] = random.randint(0, 735), random.randint(50, 150)
 
         display_element(enemies[i], enemyX[i], enemyY[i])
 
