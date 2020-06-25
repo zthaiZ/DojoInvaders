@@ -1,28 +1,28 @@
 import sys
-import pygame
+import pygame as pg
 import random
 import math
 #images: https://www.flaticon.com/authors/freepik
 #https: // www.flaticon.com/authors/smashimages
 #BG Image: https://www.vecteezy.com/vector-art/156648-illustration-of-dojo-room
 
-pygame.init()
+pg.init()
 ICON_SIZE = 64
 
 #Window/Screen
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 size = WINDOW_WIDTH, WINDOW_HEIGHT
-screen = pygame.display.set_mode(size)
-icon = pygame.image.load("images/kunais.png")
-pygame.display.set_caption('Dojo Invaders')
-pygame.display.set_icon(icon)
+screen = pg.display.set_mode(size)
+icon = pg.image.load("images/kunais.png")
+pg.display.set_caption('Dojo Invaders')
+pg.display.set_icon(icon)
 
 #Background
-bg = pygame.image.load("images/dojo.png")
+bg = pg.image.load("images/dojo.png")
 
 #Player
-player_icon = pygame.image.load("images/ninja.png")
+player_icon = pg.image.load("images/ninja.png")
 playerX, playerY = 370, 480
 playerX_delta = 0
 
@@ -34,7 +34,7 @@ enemyY = []
 enemyX_delta = []
 enemyY_delta = []
 enemy_count = 6
-enemy_icon = pygame.image.load("images/samurai.png")
+enemy_icon = pg.image.load("images/samurai.png")
 
 #Lives
 lives_count = 5
@@ -42,7 +42,7 @@ lives = []
 livesX = []
 livesY = 560
 x_pos = 700
-hp_icon = pygame.image.load("images/love.png")
+hp_icon = pg.image.load("images/love.png")
 
 
 for i in range(lives_count):
@@ -58,11 +58,20 @@ for i in range(enemy_count):
     enemyY_delta.append(40)
     
 #Weapon
-weapon_icon = pygame.image.load("images/shuriken.png")
+weapon_icon = pg.image.load("images/shuriken.png")
 weaponX, weaponY = 0, 480
 weaponX_delta = 0
 weaponY_delta = 10
 weapon_state = "ready"
+
+#Score
+score_val = 0
+scoreX = 10
+scoreY = 10
+font = pg.font.Font('freesansbold.ttf', 24)
+
+def score(x, y):
+    screen.blit(score, (x, y))
 
 def throw_weapon(x, y):
     global weapon_state
@@ -78,26 +87,25 @@ def isCollision(enemyX, enemyY, weaponX, weaponY):
         return True
     return False
 
-score = 0
 
 while 1:
     screen.fill((0, 0, 0))
     screen.blit(bg, (0, 0))
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT: sys.exit()
+    for event in pg.event.get():
+        if event.type == pg.QUIT: sys.exit()
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_LEFT:
                 playerX_delta = -5
-            if event.key == pygame.K_RIGHT:
+            if event.key == pg.K_RIGHT:
                 playerX_delta = 5
-            if event.key == pygame.K_SPACE:
-                if weapon_state is "ready":
+            if event.key == pg.K_SPACE:
+                if weapon_state == "ready":
                     weaponX = playerX
                     throw_weapon(weaponX, weaponY)
 
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+        if event.type == pg.KEYUP:
+            if event.key == pg.K_LEFT or event.key == pg.K_RIGHT:
                 playerX_delta = 0
 
     playerX += playerX_delta
@@ -112,7 +120,7 @@ while 1:
         weaponY = 480
         weapon_state = "ready"
 
-    if weapon_state is "throw":
+    if weapon_state == "throw":
         throw_weapon(weaponX, weaponY)
         weaponY -= weaponY_delta
 
@@ -120,11 +128,11 @@ while 1:
         enemyX[i] += enemyX_delta[i]
 
         if enemyX[i] <= 0:
-            enemyX_delta[i] = 3
+            enemyX_delta[i] = 4
             enemyY[i] += enemyY_delta[i]
 
         elif enemyX[i] >= WINDOW_WIDTH-ICON_SIZE:
-            enemyX_delta[i] = -3
+            enemyX_delta[i] = -4
             enemyY[i] += enemyY_delta[i]
 
         # Collision
@@ -132,14 +140,18 @@ while 1:
         if hit:
             weaponY = 480
             weapon_state = "ready"
-            score += 1
+            score_val += 1
             enemyX[i], enemyY[i] = random.randint(0, 800), random.randint(50, 150)
 
         display_element(enemies[i], enemyX[i], enemyY[i])
 
+    score = font.render("Score: " + str(score_val), True, (255, 255, 255))
+
     display_element(player_icon, playerX, playerY)
+
+    display_element(score, scoreX, scoreY)
 
     for i in range(lives_count):
         display_element(lives[i], livesX[i], livesY)
 
-    pygame.display.update()
+    pg.display.update()
