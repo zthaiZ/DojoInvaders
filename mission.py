@@ -70,6 +70,10 @@ scoreX = 10
 scoreY = 10
 font = pg.font.Font('freesansbold.ttf', 24)
 
+#Game Over
+game_over_font = pg.font.Font('freesansbold.ttf', 64)
+game_over_text = game_over_font.render("GAME OVER", True, (0, 0, 0))
+
 def score(x, y):
     screen.blit(score, (x, y))
 
@@ -125,6 +129,15 @@ while 1:
         weaponY -= weaponY_delta
 
     for i in range(enemy_count):
+
+        print(f'enemy Y: {enemyY[i]}')
+        # Game Over
+        if enemyY[i] > 440:
+            for j in range(enemy_count):
+                enemyY[j] = 2000
+            display_element(game_over_text, 200, 250)
+            break
+
         enemyX[i] += enemyX_delta[i]
 
         if enemyX[i] <= 0:
@@ -144,6 +157,8 @@ while 1:
             enemyX[i], enemyY[i] = random.randint(0, 735), random.randint(50, 150)
 
         display_element(enemies[i], enemyX[i], enemyY[i])
+
+    print(f'lives_count: {lives_count}')
 
     score = font.render("Score: " + str(score_val), True, (255, 255, 255))
 
